@@ -1,0 +1,7 @@
+datasets/bike_sharing.zip filter=lfs diff=lfs merge=lfs -text
+datasets/census_income.csv filter=lfs diff=lfs merge=lfs -text
+datasets/dd_interaction.zip filter=lfs diff=lfs merge=lfs -text
+datasets/engine_degradation.csv filter=lfs diff=lfs merge=lfs -text
+datasets/jena_climate_2009_2016.csv filter=lfs diff=lfs merge=lfs -text
+datasets/arxiv.zip filter=lfs diff=lfs merge=lfs -text
+datasets/bank_marketing.zip filter=lfs diff=lfs merge=lfs -text
