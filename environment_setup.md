@@ -42,15 +42,26 @@ You drive the cluster from host tools; Docker runs the minikube node, where Seaw
 
 ## Setup on Windows
 
-On Windows, Docker Desktop runs on WSL 2, and every other tool installs with `winget` from PowerShell. Plan about 45 minutes, including one reboot.
+On Windows, Docker Desktop runs on WSL 2, and every other tool installs with `winget` from PowerShell. Plan about 45 minutes, including up to one reboot.
 
-1. **Enable WSL 2.** Open PowerShell *as Administrator* and run the commands below, then reboot. If virtualisation is disabled, enable Intel VT-x or AMD-V in your BIOS/UEFI first.
+1. **Check for WSL 2 and enable it if needed.** Open PowerShell as Administrator and run:
 
-   ```powershell
+   ```
+   wsl --version
+   ```
+
+   **If it prints version details** (for example `WSL version: 2.x.x`), WSL is already installed. Run `wsl --update` to make sure it's current, then go straight to step 2. No reboot is needed.
+
+   **If you get an error or a list of usage options instead**, WSL is missing or outdated. Install it, then reboot:
+
+   ```
    wsl --install
    wsl --update
    ```
-2. **Install the tools.** Open a normal PowerShell window and run:
+
+   If the install reports that virtualisation is disabled, enable Intel VT-x or AMD-V in your BIOS/UEFI and run the commands again. You can check this beforehand in Task Manager → Performance → CPU, where "Virtualization" should say *Enabled*.
+   
+3. **Install the tools.** Open a normal PowerShell window and run:
 
    ```powershell
    winget install -e --id Git.Git
@@ -61,21 +72,21 @@ On Windows, Docker Desktop runs on WSL 2, and every other tool installs with `wi
    winget install -e --id astral-sh.uv
    winget install -e --id ezwinports.make   # GNU make, for the starter repo Makefile
    ```
-3. **Close and reopen PowerShell** so the new `PATH` entries are picked up.
-4. **Start Docker Desktop** from the Start menu, accept the terms, and check *Settings → General → Use the WSL 2 based engine* is ticked.
-5. **Give WSL enough memory.** With the WSL 2 engine, Docker's memory is set by WSL, not by Docker Desktop. Create `%UserProfile%\.wslconfig` with the content below, then run `wsl --shutdown` and restart Docker Desktop.
+4. **Close and reopen PowerShell** so the new `PATH` entries are picked up.
+5. **Start Docker Desktop** from the Start menu, accept the terms, and check *Settings → General → Use the WSL 2 based engine* is ticked.
+6. **Give WSL enough memory.** With the WSL 2 engine, Docker's memory is set by WSL, not by Docker Desktop. Create `%UserProfile%\.wslconfig` with the content below, then run `wsl --shutdown` and restart Docker Desktop.
 
    ```ini
    [wsl2]
    memory=10GB
    processors=4
    ```
-6. **Install Python 3.12 through uv:**
+7. **Install Python 3.12 through uv:**
 
    ```powershell
    uv python install 3.12
    ```
-7. **Configure Git** (use the email of your GitHub account):
+8. **Configure Git** (use the email of your GitHub account):
 
    ```powershell
    git config --global user.name "Your Name"
