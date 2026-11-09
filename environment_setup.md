@@ -71,22 +71,46 @@ On Windows, Docker Desktop runs on WSL 2, and every other tool installs with `wi
    winget install -e --id Helm.Helm
    winget install -e --id astral-sh.uv
    winget install -e --id ezwinports.make   # GNU make, for the starter repo Makefile
+
+   Accept the administrator prompts when they appear. If a tool is already installed, winget upgrades it instead.
+
+   Then open PowerShell **as Administrator** and install minikube, which needs admin rights:
+
    ```
-4. **Close and reopen PowerShell** so the new `PATH` entries are picked up.
-5. **Start Docker Desktop** from the Start menu, accept the terms, and check *Settings → General → Use the WSL 2 based engine* is ticked.
-6. **Give WSL enough memory.** With the WSL 2 engine, Docker's memory is set by WSL, not by Docker Desktop. Create `%UserProfile%\.wslconfig` with the content below, then run `wsl --shutdown` and restart Docker Desktop.
+   winget install -e --id Kubernetes.minikube
+   ```
+
+   If Git fails with `exit code: 4`, a program is still using Git. Close it and run the Git command again.
+
+4. **Restart PowerShell and check the installs.** Close every PowerShell window so the new `PATH` takes effect, open a new one, and run:
+
+   ```
+   git --version
+   docker --version
+   minikube version
+   kubectl version --client
+   helm version
+   uv --version
+   make --version
+   ```
+
+   Each command should print a version number. If one says "not recognized", reinstall that tool, then restart PowerShell again.
+   ```
+5. **Close and reopen PowerShell** so the new `PATH` entries are picked up.
+6. **Start Docker Desktop** from the Start menu, accept the terms, and check *Settings → General → Use the WSL 2 based engine* is ticked.
+7. **Give WSL enough memory.** With the WSL 2 engine, Docker's memory is set by WSL, not by Docker Desktop. Create `%UserProfile%\.wslconfig` with the content below, then run `wsl --shutdown` and restart Docker Desktop.
 
    ```ini
    [wsl2]
    memory=10GB
    processors=4
    ```
-7. **Install Python 3.12 through uv:**
+8. **Install Python 3.12 through uv:**
 
    ```powershell
    uv python install 3.12
    ```
-8. **Configure Git** (use the email of your GitHub account):
+9. **Configure Git** (use the email of your GitHub account):
 
    ```powershell
    git config --global user.name "Your Name"
