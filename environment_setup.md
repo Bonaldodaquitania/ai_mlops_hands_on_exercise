@@ -42,39 +42,80 @@ You drive the cluster from host tools; Docker runs the minikube node, where Seaw
 
 ## Setup on Windows
 
-On Windows, Docker Desktop runs on WSL 2, and every other tool installs with `winget` from PowerShell. Plan about 45 minutes, including one reboot.
+On Windows, Docker Desktop runs on WSL 2, and every other tool installs with `winget` from PowerShell. Plan about 45 minutes, including up to one reboot.
 
-1. **Enable WSL 2.** Open PowerShell *as Administrator* and run the commands below, then reboot. If virtualisation is disabled, enable Intel VT-x or AMD-V in your BIOS/UEFI first.
+1. **Check for WSL 2 and enable it if needed.** Open PowerShell as Administrator and run:
+
+   ```powershell
+   wsl --version
+   ```
+
+   **If it prints version details** (for example `WSL version: 2.x.x`), WSL is already installed. Run `wsl --update` to make sure it's current, then go straight to step 2. No reboot is needed.
+
+   **If you get an error or a list of usage options instead**, WSL is missing or outdated. Install it, then reboot:
 
    ```powershell
    wsl --install
    wsl --update
    ```
-2. **Install the tools.** Open a normal PowerShell window and run:
+
+   If the install reports that virtualisation is disabled, enable Intel VT-x or AMD-V in your BIOS/UEFI and run the commands again. You can check this beforehand in Task Manager → Performance → CPU, where "Virtualization" should say *Enabled*.
+
+2. **Install the tools.** Close VS Code, Git Bash and any other app that uses Git, then open a normal PowerShell window and run:
 
    ```powershell
    winget install -e --id Git.Git
    winget install -e --id Docker.DockerDesktop
-   winget install -e --id Kubernetes.minikube
    winget install -e --id Kubernetes.kubectl
    winget install -e --id Helm.Helm
    winget install -e --id astral-sh.uv
    winget install -e --id ezwinports.make   # GNU make, for the starter repo Makefile
    ```
-3. **Close and reopen PowerShell** so the new `PATH` entries are picked up.
-4. **Start Docker Desktop** from the Start menu, accept the terms, and check *Settings → General → Use the WSL 2 based engine* is ticked.
-5. **Give WSL enough memory.** With the WSL 2 engine, Docker's memory is set by WSL, not by Docker Desktop. Create `%UserProfile%\.wslconfig` with the content below, then run `wsl --shutdown` and restart Docker Desktop.
+
+   Accept the administrator prompts when they appear. If a tool is already installed, winget upgrades it instead.
+
+   Then open PowerShell **as Administrator** and install minikube, which needs admin rights:
+
+   ```powershell
+   winget install -e --id Kubernetes.minikube
+   ```
+
+   If Git fails with `exit code: 4`, a program is still using Git. Close it and run the Git command again.
+
+3. **Restart PowerShell.** Close every PowerShell window and open a new one so the new `PATH` entries take effect. Otherwise commands like `kubectl` or `uv` will say "not recognized".
+
+   If a command is still "not recognized" later, reinstall that tool and restart PowerShell again. If it's Git and an upgrade failed earlier, the old version was removed before the error: close any app that uses Git, then reinstall from an Administrator PowerShell with `winget install -e --id Git.Git --force`.
+
+   If a command prints an older version than winget installed, another copy comes first in your `PATH`. Run `where.exe <tool>` (for example `where.exe kubectl`) to see every copy. Docker Desktop includes its own `kubectl`, so an older `kubectl` version is expected and fine.
+
+4. **Start Docker Desktop** from the Start menu (not with "Run as administrator"), accept the terms, and check that *Settings → General → Choose Virtual Machine Manager (VMM)* is set to **WSL 2**. Older versions show this as a *Use the WSL 2 based engine* checkbox, which should be ticked.
+
+   If Docker Desktop says the *Privileged helper service is not running*, click *Start* and accept the administrator prompt. If it asks every time, run `Set-Service com.docker.service -StartupType Automatic` in an Administrator PowerShell.
+
+   If Docker Desktop closes with `open \\.\pipe\docker_engine: Access is denied`, another program is using Docker's connection. Restart Windows and start Docker Desktop again. If you also have Podman Desktop or Rancher Desktop, quit them first, since they conflict with Docker Desktop.
+
+5. **Give WSL enough memory.** With the WSL 2 engine, Docker's memory is set by WSL, not by Docker Desktop. Open the config file in Notepad:
+
+   ```powershell
+   notepad "$env:USERPROFILE\.wslconfig"
+   ```
+
+   If Notepad asks to create the file, choose *Yes*. Add the content below and save. Set `memory` to about half your computer's RAM, for example `8GB` on a 16 GB laptop:
 
    ```ini
    [wsl2]
-   memory=10GB
+   memory=8GB
    processors=4
    ```
+
+   Then run `wsl --shutdown` and restart Docker Desktop. This stops Docker and any running containers, so do it before you start working.
+
 6. **Install Python 3.12 through uv:**
 
    ```powershell
    uv python install 3.12
    ```
+
 7. **Configure Git** (use the email of your GitHub account):
 
    ```powershell
@@ -86,9 +127,9 @@ Then continue with *Verify your setup*.
 
 **Shell scripts:** Git for Windows includes *Git Bash*. Use it for any `.sh` script in the starter repository.
 
-**Prefer Linux tools?** You can work inside the Ubuntu distribution that `wsl --install` created. Keep Docker Desktop on Windows, enable *Settings → Resources → WSL integration* for Ubuntu, then follow the Ubuntu section inside WSL, skipping the Docker Engine step. Keep your repository inside the WSL file system (`~/`), not under `/mnt/c`, or file access becomes slow.
+**Prefer Linux tools?** You can work inside an Ubuntu distribution in WSL. If you had WSL before this setup, you may not have Ubuntu yet: check with `wsl --list`, and install it with `wsl --install -d Ubuntu` if it's missing. Keep Docker Desktop on Windows, enable *Settings → Resources → WSL integration* for Ubuntu, then follow the Ubuntu section inside WSL, skipping the Docker Engine step. Keep your repository inside the WSL file system (`~/`), not under `/mnt/c`, or file access becomes slow.
 
-**Licence note:** Docker Desktop is free for personal use, education and small businesses. On a laptop owned by a large company, check that your employer has a Docker subscription.
+**Licence note:** Docker Desktop is free for personal use, education and small businesses.
 
 ## Setup on macOS
 
@@ -120,14 +161,6 @@ On macOS everything installs with Homebrew in about 20 minutes. The same command
 
 Then continue with *Verify your setup*.
 
-**Apple silicon:** your images are built for `arm64`, and so is the minikube node. Official base images such as `python:3.12-slim` are multi-architecture, so this just works. Avoid amd64-only images: they need `--platform linux/amd64` and run slowly under emulation.
-
-**macOS older than 14, or no Docker Desktop licence?** Use Colima as the Docker engine instead, then start minikube with the same `--driver=docker` flag:
-
-```bash
-brew install colima docker
-colima start --cpu 4 --memory 8 --disk 60
-```
 
 ## Setup on Linux (Ubuntu)
 
