@@ -1,6 +1,7 @@
 from pathlib import Path
 from zipfile import ZipFile
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # Locate the dataset in the project root
 project_root = Path(__file__).resolve().parents[2]
@@ -77,3 +78,30 @@ print(
     .sort_values("cnt", ascending=False)
     .head(10)
 )
+
+
+
+# Calculate average hourly rentals by day type
+hourly_means = (
+    df.groupby(["hr", "workingday"])["cnt"]
+    .mean()
+    .unstack() # 2 columns table
+)
+
+# Plot hourly rental patterns
+ax = hourly_means.plot(figsize=(10, 5))
+
+ax.set_title("Average Bike Rentals by Hour")
+ax.set_xlabel("Hour of Day")
+ax.set_ylabel("Average Number of Rentals")
+ax.legend(["Non-working Days", "Working Days"])
+ax.grid(alpha=0.3)
+
+plt.tight_layout()
+
+# Save the figure for the analysis report
+figures_dir = project_root / "figures"
+figures_dir.mkdir(exist_ok=True)
+
+plt.savefig(figures_dir / "hourly_rentals.png", dpi=150)
+plt.show()
