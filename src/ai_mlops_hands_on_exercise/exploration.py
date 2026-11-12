@@ -250,3 +250,15 @@ ax.grid(alpha=0.3)
 plt.tight_layout()
 fig.savefig(figures_dir / "temperature_weather_vs_rentals.png", dpi=150)
 plt.show()
+
+
+# Count observations for each temperature and weather combination
+temp_weather_counts = (
+    df[df["weathersit"].isin([1, 2, 3])]
+    .groupby(["temp_bin", "weathersit"], observed=True)
+    .size()
+    .unstack(fill_value=0)
+)
+
+print("\nObservations by temperature and weather:")
+print(temp_weather_counts)
