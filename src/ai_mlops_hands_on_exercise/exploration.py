@@ -154,3 +154,28 @@ plt.tight_layout()
 fig.savefig(figures_dir / "temperature_vs_rentals.png", dpi=150)
 plt.show()
 
+
+
+# Analyze rental counts by weather condition
+weather_stats = (
+    df.groupby("weathersit")["cnt"]
+    .agg(["mean", "count"])
+)
+
+print("\nRental statistics by weather condition:")
+print(weather_stats)
+
+# Plot average rentals by weather condition
+fig, ax = plt.subplots(figsize=(8, 5))
+
+weather_stats["mean"].plot.bar(ax=ax)
+
+ax.set_title("Average Bike Rentals by Weather Condition")
+ax.set_xlabel("Weather Condition")
+ax.set_ylabel("Average Number of Rentals")
+ax.tick_params(axis="x", rotation=0)
+ax.grid(axis="y", alpha=0.3)
+
+plt.tight_layout()
+fig.savefig(figures_dir / "weather_vs_rentals.png", dpi=150)
+plt.show()
