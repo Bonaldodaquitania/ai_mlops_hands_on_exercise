@@ -105,3 +105,21 @@ figures_dir.mkdir(exist_ok=True)
 
 plt.savefig(figures_dir / "hourly_rentals.png", dpi=150)
 plt.show()
+
+
+
+
+
+# Plot the distribution of hourly bike rentals
+fig, ax = plt.subplots(figsize=(10, 5))
+
+ax.hist(df["cnt"], bins=30, edgecolor="black")
+
+ax.set_title("Distribution of Hourly Bike Rentals")
+ax.set_xlabel("Number of Rentals")
+ax.set_ylabel("Frequency")
+ax.grid(axis="y", alpha=0.3)
+
+plt.tight_layout()
+fig.savefig(figures_dir / "rental_distribution.png", dpi=150)
+plt.show()
