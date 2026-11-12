@@ -69,3 +69,11 @@ print(f"Lower bound: {lower_bound}")
 print(f"Upper bound: {upper_bound}")
 print(f"Potential outliers: {len(outliers)}")
 
+# Inspect the highest hourly rental counts
+print("\nTop 10 hourly rental counts:")
+
+print(
+    df[["dteday", "hr", "cnt", "workingday"]]
+    .sort_values("cnt", ascending=False)
+    .head(10)
+)
