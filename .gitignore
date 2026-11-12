@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Extracted Bike Sharing dataset
+datasets/bike_sharing/
+
+# Unused datasets
+datasets/engine_degradation.csv
+datasets/jena_climate_2009_2016.csv
