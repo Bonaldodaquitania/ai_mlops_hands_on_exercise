@@ -179,3 +179,74 @@ ax.grid(axis="y", alpha=0.3)
 plt.tight_layout()
 fig.savefig(figures_dir / "weather_vs_rentals.png", dpi=150)
 plt.show()
+
+
+
+
+# Analyze average bike rentals by season
+season_stats = (
+    df.groupby("season")["cnt"]
+    .agg(["mean", "count"])
+)
+
+print("\nRental statistics by season:")
+print(season_stats)
+
+# Plot average rentals by season
+fig, ax = plt.subplots(figsize=(8, 5))
+
+season_stats["mean"].plot.bar(ax=ax)
+
+ax.set_title("Average Bike Rentals by Season")
+ax.set_xlabel("Season")
+ax.set_ylabel("Average Number of Rentals")
+ax.set_xticklabels(
+    ["Spring", "Summer", "Fall", "Winter"],
+    rotation=0
+)
+ax.grid(axis="y", alpha=0.3)
+
+plt.tight_layout()
+fig.savefig(figures_dir / "season_vs_rentals.png", dpi=150)
+plt.show()
+
+
+
+
+# Analyze average rentals by temperature range and weather condition
+df["temp_c"] = df["temp"] * 41
+
+temp_bins = [0, 5, 10, 15, 20, 25, 30, 35, 41]
+temp_labels = ["0-5", "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-41"]
+
+df["temp_bin"] = pd.cut(
+    df["temp_c"],
+    bins=temp_bins,
+    labels=temp_labels,
+    include_lowest=True
+)
+
+temp_weather_stats = (
+    df[df["weathersit"].isin([1, 2, 3])]
+    .groupby(["temp_bin", "weathersit"])["cnt"]
+    .mean()
+    .unstack()
+)
+
+print("\nAverage rentals by temperature range and weather condition:")
+print(temp_weather_stats)
+
+# Plot average rentals by temperature range and weather condition
+fig, ax = plt.subplots(figsize=(10, 5))
+
+temp_weather_stats.plot(marker="o", ax=ax)
+
+ax.set_title("Average Bike Rentals by Temperature Range and Weather Condition")
+ax.set_xlabel("Temperature Range (°C)")
+ax.set_ylabel("Average Number of Rentals")
+ax.legend(["Clear", "Mist / Cloudy", "Light Rain / Snow"])
+ax.grid(alpha=0.3)
+
+plt.tight_layout()
+fig.savefig(figures_dir / "temperature_weather_vs_rentals.png", dpi=150)
+plt.show()
