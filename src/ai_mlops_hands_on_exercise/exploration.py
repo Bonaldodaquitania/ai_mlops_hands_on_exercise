@@ -20,3 +20,12 @@ print(df.head())
 
 print("\nDataset information:")
 df.info()
+
+
+# Descriptive statistics for the target
+print("\nTarget descriptive statistics:")
+print(df["cnt"].describe())
+
+# Descriptive statistics for weather-related features
+print("\nWeather features statistics:")
+print(df[["temp", "atemp", "hum", "windspeed"]].describe())
