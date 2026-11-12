@@ -123,3 +123,14 @@ ax.grid(axis="y", alpha=0.3)
 plt.tight_layout()
 fig.savefig(figures_dir / "rental_distribution.png", dpi=150)
 plt.show()
+
+
+
+
+# Calculate Pearson correlations with the rental target
+weather_features = ["temp", "atemp", "hum", "windspeed"]
+
+correlations = df[weather_features + ["cnt"]].corr()["cnt"]
+
+print("\nWeather feature correlations with rental count:")
+print(correlations)
