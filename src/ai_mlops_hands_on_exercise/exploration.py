@@ -29,3 +29,15 @@ print(df["cnt"].describe())
 # Descriptive statistics for weather-related features
 print("\nWeather features statistics:")
 print(df[["temp", "atemp", "hum", "windspeed"]].describe())
+
+# Check missing values for each column
+print("\nMissing values:")
+print(df.isna().sum())
+
+# Check duplicated date-hour observations
+print("\nDuplicate observations:")
+print(df.duplicated(subset=["dteday", "hr"]).sum())
+
+# Check consistency between target and user categories
+print("\nInconsistent rental counts:")
+print((df["casual"] + df["registered"] != df["cnt"]).sum())
