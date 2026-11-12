@@ -134,3 +134,23 @@ correlations = df[weather_features + ["cnt"]].corr()["cnt"]
 
 print("\nWeather feature correlations with rental count:")
 print(correlations)
+
+
+
+# Visualize the relationship between temperature and rental count
+fig, ax = plt.subplots(figsize=(10, 5))
+
+# Convert normalized temperature to Celsius
+temperature_celsius = df["temp"] * 41
+
+ax.scatter(temperature_celsius, df["cnt"], alpha=0.15, s=10)
+
+ax.set_title("Temperature vs Hourly Bike Rentals")
+ax.set_xlabel("Temperature (°C)")
+ax.set_ylabel("Number of Rentals")
+ax.grid(alpha=0.3)
+
+plt.tight_layout()
+fig.savefig(figures_dir / "temperature_vs_rentals.png", dpi=150)
+plt.show()
+
